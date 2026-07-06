@@ -1,38 +1,86 @@
 import { Copy, Trash2, Tag } from "lucide-react";
 
-export default function EntryRow() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30">
-      <input
-        className="bg-transparent flex-1 outline-none text-sm"
-        defaultValue="Sem descrição"
-      />
+import type { TimeEntry } from "../../lib/db";
 
-      <span className="inline-flex items-center gap-1.5 text-xs rounded-full px-2 py-1 bg-muted">
-        <span className="size-2 rounded-full bg-blue-500" />
-        Projeto
-      </span>
+import { useApp } from "../../lib/store";
 
-      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-        <Tag className="size-3" />
-        tag1
-      </span>
+function formatDuration(seconds: number) {
 
-      <span className="text-xs text-muted-foreground tabular-nums hidden md:inline">
-        08:00 - 10:30
-      </span>
+  const h = Math.floor(seconds / 3600)
+    .toString()
+    .padStart(2, "0");
 
-      <button className="font-mono text-sm tabular-nums w-24 text-right hover:text-primary">
-        02:30:00
-      </button>
+  const m = Math.floor((seconds % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
 
-      <button className="btn-ghost p-2" title="Duplicar">
-        <Copy className="size-4" />
-      </button>
+  const s = Math.floor(seconds % 60)
+    .toString()
+    .padStart(2, "0");
 
-      <button className="btn-ghost p-2 text-destructive" title="Excluir">
-        <Trash2 className="size-4" />
-      </button>
-    </div>
+  return `${h}:${m}:${s}`;
+
+}
+
+interface Props {
+
+  entry: TimeEntry;
+
+}
+
+export default function EntryRow({ entry }: Props) {
+
+  const deleteEntry = useApp(
+    s => s.deleteEntry
   );
+
+  return (
+
+    <div className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30">
+
+      <div className="flex-1">
+
+        {entry.description || "Sem descrição"}
+
+      </div>
+
+      <div className="text-xs text-muted-foreground">
+
+        {entry.tags.length > 0 && (
+
+          <span className="flex items-center gap-1">
+
+            <Tag size={14} />
+
+            {entry.tags.join(", ")}
+
+          </span>
+
+        )}
+
+      </div>
+
+      <div className="font-mono w-24 text-right">
+
+        {formatDuration(entry.duration)}
+
+      </div>
+
+      <button
+        className="btn-ghost p-2"
+      >
+        <Copy size={16}/>
+      </button>
+
+      <button
+        className="btn-ghost p-2 text-destructive"
+        onClick={() => deleteEntry(entry.id)}
+      >
+        <Trash2 size={16}/>
+      </button>
+
+    </div>
+
+  );
+
 }

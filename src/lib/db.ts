@@ -63,9 +63,9 @@ class MarcatempoDB extends Dexie {
 export const db = new MarcatempoDB();
 
 export const uid = () =>
-  (typeof crypto !== "undefined" && "randomUUID" in crypto
+  typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
-    : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    : Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 export async function getSettings(): Promise<Settings> {
   const existing = await db.settings.get("app");
@@ -81,4 +81,70 @@ export async function getSettings(): Promise<Settings> {
   };
   await db.settings.put(defaults);
   return defaults;
+}
+
+// ===========================================
+// TIME ENTRIES
+// ===========================================
+
+export async function addEntry(entry: TimeEntry) {
+  return db.entries.add(entry);
+}
+
+export async function getEntries() {
+  return db.entries.orderBy("startTime").reverse().toArray();
+}
+
+export async function updateEntry(id: string, patch: Partial<TimeEntry>) {
+  return db.entries.update(id, patch);
+}
+
+export async function deleteEntry(id: string) {
+  return db.entries.delete(id);
+}
+
+// ===========================================
+// PROJECTS
+// ===========================================
+
+export async function addProject(project: Project) {
+  return db.projects.add(project);
+}
+
+export async function getProjects() {
+  return db.projects.orderBy("name").toArray();
+}
+
+export async function updateProject(
+  id: string,
+  patch: Partial<Project>,
+) {
+  return db.projects.update(id, patch);
+}
+
+export async function deleteProject(id: string) {
+  return db.projects.delete(id);
+}
+
+// ===========================================
+// CLIENTS
+// ===========================================
+
+export async function addClient(client: Client) {
+  return db.clients.add(client);
+}
+
+export async function getClients() {
+  return db.clients.orderBy("name").toArray();
+}
+
+export async function updateClient(
+  id: string,
+  patch: Partial<Client>,
+) {
+  return db.clients.update(id, patch);
+}
+
+export async function deleteClient(id: string) {
+  return db.clients.delete(id);
 }
