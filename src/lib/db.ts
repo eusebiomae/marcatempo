@@ -111,10 +111,6 @@ export async function addProject(project: Project) {
   return db.projects.add(project);
 }
 
-export async function getProjects() {
-  return db.projects.orderBy("name").toArray();
-}
-
 export async function updateProject(
   id: string,
   patch: Partial<Project>,
@@ -124,6 +120,12 @@ export async function updateProject(
 
 export async function deleteProject(id: string) {
   return db.projects.delete(id);
+}
+
+export async function getProjects() {
+  return db.projects
+    .orderBy("name")
+    .toArray();
 }
 
 // ===========================================

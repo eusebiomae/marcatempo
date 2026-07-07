@@ -165,30 +165,32 @@ export const useApp = create<AppStore>((set) => ({
   async createProject(project) {
     await addProject(project);
 
-    const projects = await getProjects();
-
-    set({
-      projects,
-    });
+    set((state) => ({
+      projects: [...state.projects, project],
+    }));
   },
 
   async updateProject(id, patch) {
     await updateProjectDB(id, patch);
 
-    const projects = await getProjects();
+    set((state) => ({
+      projects: state.projects.map((project) =>
+        project.id === id
+          ? {
+              ...project,
 
-    set({
-      projects,
-    });
+              ...patch,
+            }
+          : project,
+      ),
+    }));
   },
 
   async deleteProject(id) {
     await deleteProjectDB(id);
 
-    const projects = await getProjects();
-
-    set({
-      projects,
-    });
+    set((state) => ({
+      projects: state.projects.filter((project) => project.id !== id),
+    }));
   },
 }));

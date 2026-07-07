@@ -31,87 +31,53 @@ function formatDate(timestamp: number) {
 }
 
 export default function EntryList() {
-
   const entries = useApp((s) => s.entries);
 
   const grouped = useMemo(() => {
-
     const map = new Map<number, typeof entries>();
 
     entries.forEach((entry) => {
-
       const key = startOfDay(entry.startTime).getTime();
 
       if (!map.has(key)) {
-
         map.set(key, []);
-
       }
 
       map.get(key)!.push(entry);
-
     });
 
     return [...map.entries()].sort((a, b) => b[0] - a[0]);
-
   }, [entries]);
 
   if (entries.length === 0) {
-
     return (
       <p className="text-sm text-muted-foreground">
         Nenhum registro encontrado.
       </p>
     );
-
   }
 
   return (
-
     <section className="space-y-6">
-
       {grouped.map(([day, list]) => {
-
-        const total = list.reduce(
-          (sum, entry) => sum + entry.duration,
-          0
-        );
+        const total = list.reduce((sum, entry) => sum + entry.duration, 0);
 
         return (
-
           <div key={day}>
-
             <div className="flex justify-between mb-2 text-sm text-muted-foreground">
-
               <span>{formatDate(day)}</span>
 
-              <span className="font-mono">
-                {formatDuration(total)}
-              </span>
-
+              <span className="font-mono">{formatDuration(total)}</span>
             </div>
 
             <div className="card-surface divide-y divide-border">
-
               {list.map((entry) => (
-
-                <EntryRow
-                  key={entry.id}
-                  entry={entry}
-                />
-
+                <EntryRow key={entry.id} entry={entry} />
               ))}
-
             </div>
-
           </div>
-
         );
-
       })}
-
     </section>
-
   );
-
 }
